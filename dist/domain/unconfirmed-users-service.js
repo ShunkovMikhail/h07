@@ -25,7 +25,7 @@ exports.unconfirmedUsersService = {
                 if ((0, isPast_1.default)(new Date(data[i].meta.expirationDate))) {
                     data[i] = null;
                 }
-                else if (data[i].email === input.email) {
+                else if (data[i].email === input.email || data[i].login === input.login) {
                     return false;
                     /*
                     //if the same email already exists in unconfirmed - all data will be overwritten and same cooldown applied.
