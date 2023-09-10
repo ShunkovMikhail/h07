@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DB = exports.admins = void 0;
 const connection_1 = require("./connection");
-const uuid_1 = require("uuid");
 //------------------ setup -----------------------
 const db = connection_1.client.db('data');
 exports.admins = { 'admin': 'qwerty' };
@@ -44,7 +43,6 @@ exports.DB = {
         return __awaiter(this, void 0, void 0, function* () {
             const entry = yield db.collection(collection).findOne({ id: id });
             if (entry) {
-                // @ts-ignore
                 return entry[property];
             }
             return null;
@@ -80,11 +78,6 @@ exports.DB = {
             yield db.collection('users').deleteMany({});
             yield db.collection('comments').deleteMany({});
             return 204;
-        });
-    },
-    generateUUID() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return (0, uuid_1.v4)();
         });
     },
     exists(collection, id) {

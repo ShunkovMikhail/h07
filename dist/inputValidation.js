@@ -9,9 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommentVdChain = exports.loginVdChain = exports.userVdChain = exports.blogPostVdChain = exports.postVdChain = exports.blogVdChain = void 0;
+exports.confirmationCodeVdChain = exports.emailVdChain = exports.CommentVdChain = exports.loginVdChain = exports.registrationVdChain = exports.userVdChain = exports.blogPostVdChain = exports.postVdChain = exports.blogVdChain = void 0;
 const express_validator_1 = require("express-validator");
 const mongo_db_1 = require("./repositories/mongo-db");
+const users_query_repository_1 = require("./repositories/query/users-query-repository");
+const unconfirmed_users_service_1 = require("./domain/unconfirmed-users-service");
+const users_service_1 = require("./domain/users-service");
 const urlPattern = new RegExp('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$');
 const loginPattern = new RegExp('^[a-zA-Z0-9_-]*$');
 const emailPattern = new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
@@ -24,6 +27,24 @@ const patternValidation = (value, regex) => {
 const blogExists = (id) => __awaiter(void 0, void 0, void 0, function* () {
     if (!(yield mongo_db_1.DB.exists('blogs', id))) {
         throw new Error('blogId does not exist!');
+    }
+    return true;
+});
+const userExists = (loginOrEmail) => __awaiter(void 0, void 0, void 0, function* () {
+    if (yield users_query_repository_1.usersQueryRepo.getDataByLoginOrEmail(loginOrEmail)) {
+        throw new Error('user already exists!');
+    }
+    return true;
+});
+const verifyConfirmationCode = (code) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield unconfirmed_users_service_1.unconfirmedUsersService.confirm(code))) {
+        throw new Error('incorrect code or expired!');
+    }
+    return true;
+});
+const updateConfirmationCode = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!(yield users_service_1.usersService.resendConfirmation(email))) {
+        throw new Error('incorrect email or expired!');
     }
     return true;
 });
@@ -44,7 +65,7 @@ exports.blogVdChain = [
         .bail()
         .isLength({ min: 1, max: 100 }).withMessage('Too many characters! (maxLength: 100)')
         .bail()
-        .custom(value => patternValidation(value, urlPattern))
+        .custom(websiteUrl => patternValidation(websiteUrl, urlPattern))
 ];
 exports.postVdChain = [
     (0, express_validator_1.body)('blogId', 'Incorrect id!')
@@ -53,7 +74,7 @@ exports.postVdChain = [
         .bail()
         .isLength({ min: 1, max: 64 })
         .bail()
-        .custom(id => blogExists(id)),
+        .custom(blogId => blogExists(blogId)),
     (0, express_validator_1.body)('title', 'Incorrect format!')
         .trim()
         .notEmpty()
@@ -94,7 +115,7 @@ exports.userVdChain = [
         .bail()
         .isLength({ min: 3, max: 10 }).withMessage('Incorrect length! (3 - 10)')
         .bail()
-        .custom(value => patternValidation(value, loginPattern)),
+        .custom(login => patternValidation(login, loginPattern)),
     (0, express_validator_1.body)('password', 'Incorrect format!')
         .trim()
         .notEmpty()
@@ -104,7 +125,28 @@ exports.userVdChain = [
         .trim()
         .notEmpty()
         .bail()
-        .custom(value => patternValidation(value, emailPattern))
+        .custom(email => patternValidation(email, emailPattern))
+];
+exports.registrationVdChain = [
+    (0, express_validator_1.body)('login', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .isLength({ min: 3, max: 10 }).withMessage('Incorrect length! (3 - 10)')
+        .bail()
+        .custom(login => patternValidation(login, loginPattern))
+        .custom(login => userExists(login)),
+    (0, express_validator_1.body)('password', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .isLength({ min: 6, max: 20 }).withMessage('Incorrect length! (6 - 20)'),
+    (0, express_validator_1.body)('email', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .custom(email => patternValidation(email, emailPattern))
+        .custom(email => userExists(email))
 ];
 exports.loginVdChain = [
     (0, express_validator_1.body)('loginOrEmail', 'Incorrect format!')
@@ -124,4 +166,19 @@ exports.CommentVdChain = [
         .notEmpty()
         .bail()
         .isLength({ min: 20, max: 300 }).withMessage('Incorrect length! (20 - 300)')
+];
+exports.emailVdChain = [
+    (0, express_validator_1.body)('email', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .custom(email => patternValidation(email, emailPattern))
+        .custom(email => updateConfirmationCode(email))
+];
+exports.confirmationCodeVdChain = [
+    (0, express_validator_1.body)('code', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .custom(code => verifyConfirmationCode(code))
 ];

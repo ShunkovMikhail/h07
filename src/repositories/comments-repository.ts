@@ -1,5 +1,6 @@
 import { DB } from './mongo-db'
 import { CommentInputModel, CommentViewModel } from '../types/models'
+import { generateID } from '../utils/generateID'
 
 export const commentsRepo = {
 
@@ -15,8 +16,8 @@ export const commentsRepo = {
         return DB.delete('comments', id)
     },
 
-    async newID(): Promise<string> {
-        return DB.generateUUID()
+    newID(): string {
+        return generateID.pretty()
     },
 
 }

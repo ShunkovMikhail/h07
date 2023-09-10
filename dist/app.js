@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.serverApp = void 0;
+exports.serverApp = exports.baseUrl = void 0;
 const express_1 = __importDefault(require("express"));
 const mongo_db_1 = require("./repositories/mongo-db");
 const blogsRouter_1 = require("./application/routes/blogsRouter");
@@ -20,10 +20,12 @@ const postsRouter_1 = require("./application/routes/postsRouter");
 const authRouter_1 = require("./application/routes/authRouter");
 const usersRouter_1 = require("./application/routes/usersRouter");
 const commentsRouter_1 = require("./application/routes/commentsRouter");
+exports.baseUrl = '';
 const serverApp = (port) => {
     const app = (0, express_1.default)();
     app.use(express_1.default.json());
     app.get('/', (req, res) => {
+        exports.baseUrl = req.protocol + '://' + req.hostname;
         res.sendStatus(204);
     });
     app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

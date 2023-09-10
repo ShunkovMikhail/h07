@@ -8,19 +8,21 @@ import {
     Paginator,
     PostViewModel,
     APIErrorResult,
-    TypeOfRequestBody, CommentInputModel, CommentViewModel, BlogPostInputModel, TypeOfRequestP_Query
+    TypeOfRequestBody,
+    CommentInputModel,
+    CommentViewModel,
+    TypeOfRequestP_Query
 } from '../../types/models'
 
 import basicAuth from 'express-basic-auth'
 import { Result, validationResult } from 'express-validator'
-import {CommentVdChain, postVdChain} from '../../inputValidation'
+import { CommentVdChain, postVdChain } from '../../inputValidation'
 import { ErrorMapper } from '../../utils/errorMapper'
 import { postsService } from '../../domain/posts-service'
 import { postsQueryRepo } from '../../repositories/query/posts-query-repository'
-import {authMiddleware} from "../../middlewares/auth-middleware";
-import {commentsService} from "../../domain/comments-service";
-import {blogsQueryRepo} from "../../repositories/query/blogs-query-repository";
-import {commentsQueryRepo} from "../../repositories/query/comments-query-repository";
+import { authMiddleware } from '../../middlewares/auth-middleware'
+import { commentsService } from '../../domain/comments-service'
+import { commentsQueryRepo } from '../../repositories/query/comments-query-repository'
 
 export const postsRouter = Router({})
 

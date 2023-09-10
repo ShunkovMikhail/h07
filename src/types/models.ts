@@ -82,9 +82,23 @@ export type UserViewModel = {
 export type UserDataModel = {
     id: string
     login: string
-    password: string
     email: string
     createdAt: string
+    meta: { password: string }
+}
+
+export type unconfirmedUserDataModel = {
+    id: string
+    login: string
+    email: string
+    meta: {
+        password: string
+        code: string
+        expirationDate: string
+        cooldowns: {
+            codeResent: number
+        }
+    }
 }
 
 export type MeViewModel = {
@@ -119,6 +133,14 @@ export type CommentDataModel = {
 
 export type CommentInputModel = {
     content: string
+}
+
+export type RegistrationConfirmationCodeModel = {
+    code: string
+}
+
+export type RegistrationEmailResending = {
+    email: string
 }
 
 

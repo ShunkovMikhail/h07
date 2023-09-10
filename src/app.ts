@@ -6,12 +6,15 @@ import { authRouter } from './application/routes/authRouter'
 import { usersRouter } from './application/routes/usersRouter'
 import { commentsRouter } from './application/routes/commentsRouter'
 
+export let baseUrl = ''
+
 export const serverApp = (port: number) => {
     const app = express()
 
     app.use(express.json())
 
     app.get('/', (req: Request, res: Response) => {
+        baseUrl = req.protocol + '://' + req.hostname
         res.sendStatus(204)
     })
 

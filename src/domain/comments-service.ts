@@ -13,7 +13,7 @@ export const commentsService = {
     async create(req: TypeOfRequestBody<CommentInputModel>, pId: string): Promise<CommentViewModel> {
 
         const newEntry: CommentDataModel = {
-            id: await commentsRepo.newID(),
+            id: commentsRepo.newID(),
             postId: pId,
             content: req.body.content,
             commentatorInfo: {

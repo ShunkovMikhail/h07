@@ -41,7 +41,7 @@ export const usersQueryRepo = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: resCount,
-            items: await DB.getAll('users', query, { password: 0 }, {[sortBy]: sortDirection}, S, L) as Array<UserViewModel | null>
+            items: await DB.getAll('users', query, { meta: 0 }, {[sortBy]: sortDirection}, S, L) as Array<UserViewModel | null>
         }
 
         return page

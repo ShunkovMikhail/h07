@@ -9,26 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsRepo = void 0;
-const mongo_db_1 = require("./mongo-db");
-const generateID_1 = require("../utils/generateID");
-exports.blogsRepo = {
-    create(input) {
+exports.emailManager = void 0;
+const email_adapter_1 = require("../adapters/email-adapter");
+const app_1 = require("../app");
+exports.emailManager = {
+    accountConfirmation(email, code) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield mongo_db_1.DB.create('blogs', input);
+            yield email_adapter_1.emailAdapter.send(email, 'Confirm your email', " <h1>Thank for your registration</h1>\n" +
+                " <p>To finish registration please follow the link below:\n" +
+                "     <a href='" + app_1.baseUrl + "/auth/confirm-email?code=" + code + "'>complete registration</a>\n" +
+                " </p>\n");
         });
-    },
-    update(id, input) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield mongo_db_1.DB.update('blogs', id, input);
-        });
-    },
-    delete(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return mongo_db_1.DB.delete('blogs', id);
-        });
-    },
-    newID() {
-        return generateID_1.generateID.pretty(16);
-    },
+    }
 };

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRepo = void 0;
 const mongo_db_1 = require("./mongo-db");
+const generateID_1 = require("../utils/generateID");
 exports.commentsRepo = {
     create(input) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,8 +29,6 @@ exports.commentsRepo = {
         });
     },
     newID() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return mongo_db_1.DB.generateUUID();
-        });
+        return generateID_1.generateID.pretty();
     },
 };

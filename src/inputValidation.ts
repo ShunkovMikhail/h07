@@ -1,5 +1,8 @@
 import { body } from 'express-validator'
 import { DB } from './repositories/mongo-db'
+import { usersQueryRepo } from './repositories/query/users-query-repository'
+import { unconfirmedUsersService } from './domain/unconfirmed-users-service'
+import { usersService } from './domain/users-service'
 
 const urlPattern = new RegExp('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$')
 const loginPattern = new RegExp('^[a-zA-Z0-9_-]*$')
@@ -19,6 +22,33 @@ const patternValidation = (value: string, regex: RegExp) => {
 const blogExists = async (id: string) => {
     if (!await DB.exists('blogs', id)) {
         throw new Error('blogId does not exist!')
+    }
+    return true
+}
+
+
+
+const userExists = async (loginOrEmail: string) => {
+    if (await usersQueryRepo.getDataByLoginOrEmail(loginOrEmail)) {
+        throw new Error('user already exists!')
+    }
+    return true
+}
+
+
+
+const verifyConfirmationCode = async (code: string) => {
+    if (!await unconfirmedUsersService.confirm(code)) {
+        throw new Error('incorrect code or expired!')
+    }
+    return true
+}
+
+
+
+const updateConfirmationCode = async (email: string) => {
+    if (!await usersService.resendConfirmation(email)) {
+        throw new Error('incorrect email or expired!')
     }
     return true
 }
@@ -45,7 +75,7 @@ export const blogVdChain = [
         .bail()
         .isLength({min: 1, max: 100}).withMessage('Too many characters! (maxLength: 100)')
         .bail()
-        .custom(value => patternValidation(value, urlPattern))
+        .custom(websiteUrl => patternValidation(websiteUrl, urlPattern))
 
 ]
 
@@ -59,7 +89,7 @@ export const postVdChain = [
         .bail()
         .isLength({min: 1, max: 64})
         .bail()
-        .custom(id => blogExists(id)),
+        .custom(blogId => blogExists(blogId)),
 
     body('title', 'Incorrect format!')
         .trim()
@@ -115,7 +145,7 @@ export const userVdChain = [
         .bail()
         .isLength({min: 3, max: 10}).withMessage('Incorrect length! (3 - 10)')
         .bail()
-        .custom(value => patternValidation(value, loginPattern)),
+        .custom(login => patternValidation(login, loginPattern)),
 
     body('password', 'Incorrect format!')
         .trim()
@@ -127,7 +157,35 @@ export const userVdChain = [
         .trim()
         .notEmpty()
         .bail()
-        .custom(value => patternValidation(value, emailPattern))
+        .custom(email => patternValidation(email, emailPattern))
+
+]
+
+
+
+export const registrationVdChain = [
+
+    body('login', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .isLength({min: 3, max: 10}).withMessage('Incorrect length! (3 - 10)')
+        .bail()
+        .custom(login => patternValidation(login, loginPattern))
+        .custom(login => userExists(login)),
+
+    body('password', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .isLength({min: 6, max: 20}).withMessage('Incorrect length! (6 - 20)'),
+
+    body('email', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .custom(email => patternValidation(email, emailPattern))
+        .custom(email => userExists(email))
 
 ]
 
@@ -158,6 +216,31 @@ export const CommentVdChain = [
         .notEmpty()
         .bail()
         .isLength({min: 20, max: 300}).withMessage('Incorrect length! (20 - 300)')
+
+]
+
+
+
+export const emailVdChain = [
+
+    body('email', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .custom(email => patternValidation(email, emailPattern))
+        .custom(email => updateConfirmationCode(email))
+
+]
+
+
+
+export const confirmationCodeVdChain = [
+
+    body('code', 'Incorrect format!')
+        .trim()
+        .notEmpty()
+        .bail()
+        .custom(code => verifyConfirmationCode(code))
 
 ]
 

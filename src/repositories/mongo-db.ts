@@ -1,5 +1,4 @@
-import { client } from "./connection"
-import { v4 as uuid } from 'uuid'
+import { client } from './connection'
 
 //------------------ setup -----------------------
 const db = client.db('data')
@@ -31,7 +30,6 @@ export const DB = {
     async getProperty(collection: string, id: string, property: string) {
         const entry = await db.collection(collection).findOne({id: id})
         if (entry) {
-            // @ts-ignore
             return entry[property]
         }
         return null
@@ -63,10 +61,6 @@ export const DB = {
         await db.collection('users').deleteMany({})
         await db.collection('comments').deleteMany({})
         return 204
-    },
-
-    async generateUUID(): Promise<string> {
-        return uuid()
     },
 
     async exists(collection: string, id: string): Promise<boolean> {

@@ -17,6 +17,7 @@ const errorMapper_1 = require("../../utils/errorMapper");
 const users_service_1 = require("../../domain/users-service");
 const jwt_service_1 = require("../jwt-service");
 const auth_middleware_1 = require("../../middlewares/auth-middleware");
+const unconfirmed_users_service_1 = require("../../domain/unconfirmed-users-service");
 exports.authRouter = (0, express_1.Router)({});
 exports.authRouter.post('/login', inputValidation_1.loginVdChain, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = (0, express_validator_1.validationResult)(req);
@@ -40,4 +41,35 @@ exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __
         userId: req.user.id
     };
     res.status(200).json(me);
+}));
+exports.authRouter.post('/registration', inputValidation_1.registrationVdChain, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = (0, express_validator_1.validationResult)(req);
+    if (result.isEmpty()) {
+        res.sendStatus(yield users_service_1.usersService.register(req));
+    }
+    else {
+        res.status(400).json(yield (0, errorMapper_1.ErrorMapper)(result));
+    }
+}));
+exports.authRouter.post('/registration-confirmation', inputValidation_1.confirmationCodeVdChain, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = (0, express_validator_1.validationResult)(req);
+    if (result.isEmpty()) {
+        res.sendStatus(204);
+    }
+    else {
+        res.status(400).json(yield (0, errorMapper_1.ErrorMapper)(result));
+    }
+}));
+exports.authRouter.post('/registration-email-resending', inputValidation_1.emailVdChain, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = (0, express_validator_1.validationResult)(req);
+    if (result.isEmpty()) {
+        res.sendStatus(204);
+    }
+    else {
+        res.status(400).json(yield (0, errorMapper_1.ErrorMapper)(result));
+    }
+}));
+exports.authRouter.get('/confirm-email', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield unconfirmed_users_service_1.unconfirmedUsersService.confirm(req.query.code);
+    res.sendStatus(200);
 }));

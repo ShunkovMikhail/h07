@@ -2,7 +2,8 @@ import { CommentVdChain } from '../../inputValidation'
 import {
     CommentInputModel,
     CommentViewModel,
-    TypeOfRequestP, TypeOfRequestP_Body
+    TypeOfRequestP,
+    TypeOfRequestP_Body
 } from '../../types/models'
 import { Request, Response, Router } from 'express'
 import { Result, validationResult } from 'express-validator'

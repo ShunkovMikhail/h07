@@ -6,7 +6,7 @@ export const blogsService = {
     async create(req: TypeOfRequestBody<BlogInputModel>): Promise<BlogViewModel> {
 
         const newEntry: BlogViewModel = {
-            id: await blogsRepo.newID(),
+            id: blogsRepo.newID(),
             name: req.body.name,
             description: req.body.description,
             websiteUrl: req.body.websiteUrl,

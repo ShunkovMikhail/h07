@@ -14,7 +14,7 @@ export const postsService = {
     async create(req: TypeOfRequestBody<PostInputModel>): Promise<PostViewModel> {
 
         const newEntry: PostViewModel = {
-            id: await postsRepo.newID(),
+            id: postsRepo.newID(),
             blogId: req.body.blogId,
             blogName: await DB.getProperty('blogs', req.body.blogId, 'name'),
             title: req.body.title,
@@ -32,7 +32,7 @@ export const postsService = {
     async createByBlog(req: TypeOfRequestBody<BlogPostInputModel>, bId: string): Promise<PostViewModel> {
 
         const newEntry: PostViewModel = {
-            id: await postsRepo.newID(),
+            id: postsRepo.newID(),
             blogId: bId,
             blogName: await DB.getProperty('blogs', bId, 'name'),
             title: req.body.title,

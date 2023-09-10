@@ -27,20 +27,62 @@ exports.usersService = void 0;
 const users_repository_1 = require("../repositories/users-repository");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const users_query_repository_1 = require("../repositories/query/users-query-repository");
+const email_manager_1 = require("../managers/email-manager");
+const add_1 = __importDefault(require("date-fns/add"));
+const generateID_1 = require("../utils/generateID");
+const unconfirmed_users_service_1 = require("./unconfirmed-users-service");
 exports.usersService = {
     create(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const newEntry = {
-                id: yield users_repository_1.usersRepo.newID(),
+                id: users_repository_1.usersRepo.newID(),
                 login: req.body.login,
-                password: yield bcrypt_1.default.hash(req.body.password, 8),
                 email: req.body.email,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                meta: {
+                    password: yield bcrypt_1.default.hash(req.body.password, 8)
+                }
             };
             yield users_repository_1.usersRepo.create(Object.assign({}, newEntry));
             //exclude certain fields and return rest.
-            const { password } = newEntry, rest = __rest(newEntry, ["password"]);
+            const { meta } = newEntry, rest = __rest(newEntry, ["meta"]);
             return rest;
+        });
+    },
+    register(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const newEntry = {
+                id: users_repository_1.usersRepo.newID(),
+                login: req.body.login,
+                email: req.body.email,
+                meta: {
+                    password: yield bcrypt_1.default.hash(req.body.password, 8),
+                    code: generateID_1.generateID.pretty(7),
+                    expirationDate: (0, add_1.default)(new Date(), { minutes: 10 }).toISOString(),
+                    cooldowns: {
+                        codeResent: (0, add_1.default)(new Date(), { minutes: 1 }).valueOf()
+                    }
+                }
+            };
+            if (unconfirmed_users_service_1.unconfirmedUsersService.add(newEntry)) {
+                yield email_manager_1.emailManager.accountConfirmation(newEntry.email, newEntry.meta.code);
+                return 204;
+            }
+            else {
+                return 429;
+            }
+        });
+    },
+    resendConfirmation(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const code = generateID_1.generateID.pretty(7);
+            if (unconfirmed_users_service_1.unconfirmedUsersService.updateCode(email, code)) {
+                yield email_manager_1.emailManager.accountConfirmation(email, code);
+                return true;
+            }
+            else {
+                return false;
+            }
         });
     },
     delete(req) {
@@ -52,7 +94,7 @@ exports.usersService = {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield users_query_repository_1.usersQueryRepo.getDataByLoginOrEmail(req.body.loginOrEmail);
             if (user) {
-                if (yield bcrypt_1.default.compare(req.body.password, user.password)) {
+                if (yield bcrypt_1.default.compare(req.body.password, user.meta.password)) {
                     return user;
                 }
             }

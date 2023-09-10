@@ -16,7 +16,7 @@ exports.postsService = {
     create(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const newEntry = {
-                id: yield posts_repository_1.postsRepo.newID(),
+                id: posts_repository_1.postsRepo.newID(),
                 blogId: req.body.blogId,
                 blogName: yield mongo_db_1.DB.getProperty('blogs', req.body.blogId, 'name'),
                 title: req.body.title,
@@ -31,7 +31,7 @@ exports.postsService = {
     createByBlog(req, bId) {
         return __awaiter(this, void 0, void 0, function* () {
             const newEntry = {
-                id: yield posts_repository_1.postsRepo.newID(),
+                id: posts_repository_1.postsRepo.newID(),
                 blogId: bId,
                 blogName: yield mongo_db_1.DB.getProperty('blogs', bId, 'name'),
                 title: req.body.title,

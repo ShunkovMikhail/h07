@@ -15,7 +15,7 @@ exports.blogsService = {
     create(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const newEntry = {
-                id: yield blogs_repository_1.blogsRepo.newID(),
+                id: blogs_repository_1.blogsRepo.newID(),
                 name: req.body.name,
                 description: req.body.description,
                 websiteUrl: req.body.websiteUrl,

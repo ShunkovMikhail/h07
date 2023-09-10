@@ -1,5 +1,6 @@
 import { DB } from './mongo-db'
 import { BlogInputModel, BlogViewModel } from '../types/models'
+import { generateID } from '../utils/generateID'
 
 export const blogsRepo = {
 
@@ -15,8 +16,8 @@ export const blogsRepo = {
         return DB.delete('blogs', id)
     },
 
-    async newID(): Promise<string> {
-        return DB.generateUUID()
+    newID(): string {
+        return generateID.pretty(16)
     },
 
 }

@@ -43,7 +43,7 @@ exports.usersQueryRepo = {
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: resCount,
-                items: yield mongo_db_1.DB.getAll('users', query, { password: 0 }, { [sortBy]: sortDirection }, S, L)
+                items: yield mongo_db_1.DB.getAll('users', query, { meta: 0 }, { [sortBy]: sortDirection }, S, L)
             };
             return page;
         });

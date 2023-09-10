@@ -1,17 +1,22 @@
-import { loginVdChain } from '../../inputValidation'
+import {confirmationCodeVdChain, emailVdChain, loginVdChain, registrationVdChain} from '../../inputValidation'
 import {
     APIErrorResult,
     LoginInputModel,
     LoginSuccessViewModel,
     MeViewModel,
-    TypeOfRequestBody
+    RegistrationConfirmationCodeModel,
+    RegistrationEmailResending,
+    TypeOfRequestBody,
+    TypeOfRequestQuery,
+    UserInputModel
 } from '../../types/models'
 import { Request, Response, Router } from 'express'
 import { Result, validationResult } from 'express-validator'
 import { ErrorMapper } from '../../utils/errorMapper'
 import { usersService } from '../../domain/users-service'
 import { jwtService } from '../jwt-service'
-import { authMiddleware } from "../../middlewares/auth-middleware"
+import { authMiddleware } from '../../middlewares/auth-middleware'
+import { unconfirmedUsersService } from '../../domain/unconfirmed-users-service'
 
 export const authRouter = Router({})
 
@@ -42,3 +47,52 @@ authRouter.get('/me', authMiddleware, async (req: Request, res: Response<MeViewM
     }
         res.status(200).json(me)
 })
+
+
+
+authRouter.post('/registration', registrationVdChain, async (req: TypeOfRequestBody<UserInputModel>, res: Response) => {
+
+    const result: Result = validationResult(req)
+
+    if (result.isEmpty()) {
+        res.sendStatus(await usersService.register(req))
+    } else {
+        res.status(400).json(await ErrorMapper(result))
+    }
+})
+
+
+
+authRouter.post('/registration-confirmation', confirmationCodeVdChain, async (req: TypeOfRequestBody<RegistrationConfirmationCodeModel>, res: Response) => {
+
+    const result: Result = validationResult(req)
+
+    if (result.isEmpty()) {
+        res.sendStatus(204)
+    } else {
+        res.status(400).json(await ErrorMapper(result))
+    }
+})
+
+
+
+authRouter.post('/registration-email-resending', emailVdChain, async (req: TypeOfRequestBody<RegistrationEmailResending>, res: Response) => {
+
+    const result: Result = validationResult(req)
+
+    if (result.isEmpty()) {
+        res.sendStatus(204)
+    } else {
+        res.status(400).json(await ErrorMapper(result))
+    }
+})
+
+
+
+authRouter.get('/confirm-email', async (req: TypeOfRequestQuery<{ code: string }>, res: Response) => {
+
+    await unconfirmedUsersService.confirm(req.query.code)
+    res.sendStatus(200)
+})
+
+

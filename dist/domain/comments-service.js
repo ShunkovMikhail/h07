@@ -26,7 +26,7 @@ exports.commentsService = {
     create(req, pId) {
         return __awaiter(this, void 0, void 0, function* () {
             const newEntry = {
-                id: yield comments_repository_1.commentsRepo.newID(),
+                id: comments_repository_1.commentsRepo.newID(),
                 postId: pId,
                 content: req.body.content,
                 commentatorInfo: {
