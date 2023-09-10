@@ -24,34 +24,47 @@ exports.unconfirmedUsersService = {
             if (data[i]) {
                 if ((0, isPast_1.default)(new Date(data[i].meta.expirationDate))) {
                     data[i] = null;
-                }
-                else if (data[i].email === input.email || data[i].login === input.login) {
-                    return false;
-                    /*
-                    //if the same email already exists in unconfirmed - all data will be overwritten and same cooldown applied.
-                    //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
+                } //else if (data[i]!.email === input.email || data[i]!.login === input.login) {
+                //return false
+                /*
+                //if the same email already exists in unconfirmed - all data will be overwritten and same cooldown applied.
+                //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
 
-                        const updateEntry = {
-                            meta: {
-                                ...input.meta,
-                                cooldowns: {
-                                    ...input.meta.cooldowns,
-                                    codeResent: add(new Date(), {minutes: 1}).valueOf()
-                                }
+                    const updateEntry = {
+                        meta: {
+                            ...input.meta,
+                            cooldowns: {
+                                ...input.meta.cooldowns,
+                                codeResent: add(new Date(), {minutes: 1}).valueOf()
                             }
                         }
+                    }
 
-                        data[i] = Object.assign({}, input, updateEntry)
-                        return true
-                    //} else {
-                    //    return false
-                    //}
-                    */
-                }
+                    data[i] = Object.assign({}, input, updateEntry)
+                    return true
+                //} else {
+                //    return false
+                //}
+                */
+                //}
             }
         }
         data.push(input);
         return true;
+    },
+    exists(loginOrEmail) {
+        //search for existing unconfirmed user +GC
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]) {
+                if ((0, isPast_1.default)(new Date(data[i].meta.expirationDate))) {
+                    data[i] = null;
+                }
+                else if (data[i].email === loginOrEmail || data[i].login === loginOrEmail) {
+                    return true;
+                }
+            }
+        }
+        return false;
     },
     confirm(code) {
         return __awaiter(this, void 0, void 0, function* () {

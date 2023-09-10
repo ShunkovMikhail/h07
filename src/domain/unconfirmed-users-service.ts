@@ -13,8 +13,8 @@ export const unconfirmedUsersService = {
             if (data[i]) {
                 if (isPast(new Date(data[i]!.meta.expirationDate))) {
                     data[i] = null
-                } else if (data[i]!.email === input.email || data[i]!.login === input.login) {
-                    return false
+                } //else if (data[i]!.email === input.email || data[i]!.login === input.login) {
+                    //return false
                     /*
                     //if the same email already exists in unconfirmed - all data will be overwritten and same cooldown applied.
                     //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
@@ -35,11 +35,27 @@ export const unconfirmedUsersService = {
                     //    return false
                     //}
                     */
-                }
+                //}
             }
         }
         data.push(input)
         return true
+    },
+
+
+
+    exists(loginOrEmail: string): boolean {
+        //search for existing unconfirmed user +GC
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]) {
+                if (isPast(new Date(data[i]!.meta.expirationDate))) {
+                    data[i] = null
+                } else if (data[i]!.email === loginOrEmail || data[i]!.login === loginOrEmail) {
+                    return true
+                }
+            }
+        }
+        return false
     },
 
 

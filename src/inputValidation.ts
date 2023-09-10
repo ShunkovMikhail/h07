@@ -29,7 +29,7 @@ const blogExists = async (id: string) => {
 
 
 const userExists = async (loginOrEmail: string) => {
-    if (await usersQueryRepo.getDataByLoginOrEmail(loginOrEmail)) {
+    if (await usersQueryRepo.getDataByLoginOrEmail(loginOrEmail) || unconfirmedUsersService.exists(loginOrEmail)) {
         throw new Error('user already exists!')
     }
     return true

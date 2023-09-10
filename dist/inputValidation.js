@@ -31,7 +31,7 @@ const blogExists = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return true;
 });
 const userExists = (loginOrEmail) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield users_query_repository_1.usersQueryRepo.getDataByLoginOrEmail(loginOrEmail)) {
+    if ((yield users_query_repository_1.usersQueryRepo.getDataByLoginOrEmail(loginOrEmail)) || unconfirmed_users_service_1.unconfirmedUsersService.exists(loginOrEmail)) {
         throw new Error('user already exists!');
     }
     return true;
