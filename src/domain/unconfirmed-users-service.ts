@@ -14,8 +14,10 @@ export const unconfirmedUsersService = {
                 if (isPast(new Date(data[i]!.meta.expirationDate))) {
                     data[i] = null
                 } else if (data[i]!.email === input.email) {
+                    return false
+                    /*
                     //if the same email already exists in unconfirmed - all data will be overwritten and same cooldown applied.
-                    if (isPast(data[i]!.meta.cooldowns.codeResent)) {
+                    //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
 
                         const updateEntry = {
                             meta: {
@@ -29,9 +31,10 @@ export const unconfirmedUsersService = {
 
                         data[i] = Object.assign({}, input, updateEntry)
                         return true
-                    } else {
-                        return false
-                    }
+                    //} else {
+                    //    return false
+                    //}
+                    */
                 }
             }
         }
@@ -77,7 +80,7 @@ export const unconfirmedUsersService = {
                 if (isPast(new Date(data[i]!.meta.expirationDate))) {
                     data[i] = null
                 } else if (data[i]!.email === email) {
-                    if (isPast(data[i]!.meta.cooldowns.codeResent)) {
+                    //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
 
                         const updateEntry = {
                             meta: {
@@ -92,7 +95,7 @@ export const unconfirmedUsersService = {
 
                         data[i] = Object.assign({}, data[i], updateEntry)
                         return true
-                    }
+                    //}
                 }
             }
         }

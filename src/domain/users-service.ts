@@ -57,7 +57,7 @@ export const usersService = {
             await emailManager.accountConfirmation(newEntry.email, newEntry.meta.code)
             return 204
         } else {
-            return 429
+            return 400
         }
     },
 

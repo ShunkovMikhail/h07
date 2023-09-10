@@ -69,7 +69,7 @@ exports.usersService = {
                 return 204;
             }
             else {
-                return 429;
+                return 400;
             }
         });
     },

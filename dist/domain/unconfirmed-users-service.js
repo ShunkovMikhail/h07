@@ -26,17 +26,27 @@ exports.unconfirmedUsersService = {
                     data[i] = null;
                 }
                 else if (data[i].email === input.email) {
+                    return false;
+                    /*
                     //if the same email already exists in unconfirmed - all data will be overwritten and same cooldown applied.
-                    if ((0, isPast_1.default)(data[i].meta.cooldowns.codeResent)) {
+                    //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
+
                         const updateEntry = {
-                            meta: Object.assign(Object.assign({}, input.meta), { cooldowns: Object.assign(Object.assign({}, input.meta.cooldowns), { codeResent: (0, add_1.default)(new Date(), { minutes: 1 }).valueOf() }) })
-                        };
-                        data[i] = Object.assign({}, input, updateEntry);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                            meta: {
+                                ...input.meta,
+                                cooldowns: {
+                                    ...input.meta.cooldowns,
+                                    codeResent: add(new Date(), {minutes: 1}).valueOf()
+                                }
+                            }
+                        }
+
+                        data[i] = Object.assign({}, input, updateEntry)
+                        return true
+                    //} else {
+                    //    return false
+                    //}
+                    */
                 }
             }
         }
@@ -78,13 +88,13 @@ exports.unconfirmedUsersService = {
                     data[i] = null;
                 }
                 else if (data[i].email === email) {
-                    if ((0, isPast_1.default)(data[i].meta.cooldowns.codeResent)) {
-                        const updateEntry = {
-                            meta: Object.assign(Object.assign({}, data[i].meta), { code: code, cooldowns: Object.assign(Object.assign({}, data[i].meta.cooldowns), { codeResent: (0, add_1.default)(new Date(), { minutes: 1 }).valueOf() }) })
-                        };
-                        data[i] = Object.assign({}, data[i], updateEntry);
-                        return true;
-                    }
+                    //if (isPast(data[i]!.meta.cooldowns.codeResent)) {
+                    const updateEntry = {
+                        meta: Object.assign(Object.assign({}, data[i].meta), { code: code, cooldowns: Object.assign(Object.assign({}, data[i].meta.cooldowns), { codeResent: (0, add_1.default)(new Date(), { minutes: 1 }).valueOf() }) })
+                    };
+                    data[i] = Object.assign({}, data[i], updateEntry);
+                    return true;
+                    //}
                 }
             }
         }
